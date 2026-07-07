@@ -15,19 +15,19 @@ import {
 } from "./messaging"
 
 export const AuthGroup = {
-  SuperAdmin: `super-admin${envSuffix}`,
-  SeoManager: `seo-manager${envSuffix}`,
-  Editors: `editors${envSuffix}`,
+  Admin: "admin",
+  User: "user",
 } as const
 
 export const auth = defineAuth({
-  name: `${app_name}-cms-auth-${envSuffix}`,
+  name: `${app_name}-auth-${envSuffix}`,
   loginWith: {
     email: true,
   },
   triggers: {
     postConfirmation: postConfirmation,
   },
+  groups: [AuthGroup.Admin, AuthGroup.User],
 })
 
 export const initAuth = (params: {
