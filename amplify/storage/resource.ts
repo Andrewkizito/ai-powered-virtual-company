@@ -1,7 +1,8 @@
-import { defineStorage } from "@aws-amplify/backend";
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import { Construct } from "constructs";
-import { app_name, dynamodb_table_name, envSuffix } from "../utils";
+import { defineStorage } from "@aws-amplify/backend"
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb"
+import { Construct } from "constructs"
+import { app_name, dynamodb_table_name, envSuffix } from "../utils"
+import { RemovalPolicy } from "aws-cdk-lib"
 
 export const s3Storage = defineStorage({
   name: `${app_name}-media-files${envSuffix}`,
@@ -18,9 +19,9 @@ export const s3Storage = defineStorage({
       allow.entity("identity").to(["read", "write", "delete"]),
     ],
   }),
-  keepOnDelete: true,
+  keepOnDelete: false,
   isDefault: true,
-});
+})
 
 export const initDynamoDb = (scope: Construct): dynamodb.Table => {
   const table = new dynamodb.Table(scope, "dynamo-db-storage", {
@@ -35,7 +36,8 @@ export const initDynamoDb = (scope: Construct): dynamodb.Table => {
       type: dynamodb.AttributeType.STRING,
     },
     timeToLiveAttribute: "TTL",
-  });
+    removalPolicy: RemovalPolicy.DESTROY,
+  })
 
-  return table;
-};
+  return table
+}
