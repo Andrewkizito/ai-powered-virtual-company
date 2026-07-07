@@ -8,7 +8,7 @@ backend:
         - corepack prepare pnpm@10.7.1 --activate
         - pnpm install --frozen-lockfile
         - |
-          if [ "$AWS_BRANCH" = "main" ] && [ "$DEPLOY_BACKEND" = "true" ]; then
+          if [ "$AWS_BRANCH" = "main" ]; then
             echo "Deploying backend for main branch..."
             pnpm exec ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
           else
