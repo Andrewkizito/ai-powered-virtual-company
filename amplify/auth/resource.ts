@@ -37,7 +37,6 @@ export const initAuth = (params: {
   userPoolClient: CfnUserPoolClient
 }) => {
   params.userPool.adminCreateUserConfig = {
-    allowAdminCreateUserOnly: true,
     inviteMessageTemplate: {
       emailSubject: inviteEmailSubject,
       emailMessage: inviteEmailMessage,
