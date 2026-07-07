@@ -19,5 +19,6 @@ initAuth({
 const databaseStack = backend.createStack("Database")
 const dbTable = initDynamoDb(databaseStack)
 
+// Enforce bucket name to avoid auto generated names
 backend.storage.resources.cfnResources.cfnBucket.bucketName = `${app_name}-media-files${envSuffix}`
 dbTable.grantWriteData(backend.postConfirmation.resources.lambda)
