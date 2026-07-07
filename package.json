@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "backend": "npx ampx sandbox --identifier local --profile c-dev",
+    "backend": "npx ampx sandbox --identifier $(whoami) --profile c-dev",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
