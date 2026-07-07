@@ -6,18 +6,19 @@ import {
   UserPoolDomain,
 } from "aws-cdk-lib/aws-cognito"
 import { postConfirmation } from "../functions/postConfirmation/resource"
-import { app_domain, app_name, auth_domain_prefix, envSuffix } from "../utils"
+import {
+  app_domain,
+  app_name,
+  auth_domain_prefix,
+  AuthGroups,
+  envSuffix,
+} from "../utils"
 import {
   inviteEmailMessage,
   inviteEmailSubject,
   verificationEmailMessage,
   verificationEmailSubject,
 } from "./messaging"
-
-export const AuthGroup = {
-  Admin: "admin",
-  User: "user",
-} as const
 
 export const auth = defineAuth({
   name: `${app_name}-auth-${envSuffix}`,
@@ -27,7 +28,8 @@ export const auth = defineAuth({
   triggers: {
     postConfirmation: postConfirmation,
   },
-  groups: [AuthGroup.Admin, AuthGroup.User],
+  groups: [AuthGroups.Admin, AuthGroups.User],
+  access: (allow) => [allow.resource(postConfirmation).to(["addUserToGroup"])],
 })
 
 export const initAuth = (params: {
