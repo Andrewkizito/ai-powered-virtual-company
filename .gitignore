@@ -22,7 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
 .vite
+.env
 
 # Backend related files
 .amplify
