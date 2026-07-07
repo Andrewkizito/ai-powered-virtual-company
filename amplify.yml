@@ -9,11 +9,11 @@ backend:
         - pnpm install --frozen-lockfile
         - |
           if [ "$AWS_BRANCH" = "main" ]; then
-            echo "Deploying backend for main branch..."
+            echo "Deploying backend for production..."
             pnpm exec ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
           else
-            echo "Skipping backend deploy. Generating outputs from main backend..."
-            pnpm exec ampx generate outputs --branch main --app-id $AWS_APP_ID
+            echo "Deploying backend for $AWS_BRANCH..."
+            pnpm exec ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
           fi
 
 frontend:
