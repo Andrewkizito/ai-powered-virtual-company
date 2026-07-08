@@ -2,6 +2,7 @@ import { defineBackend } from "@aws-amplify/backend"
 import { auth, initAuth } from "./auth/resource"
 import { initDynamoDb, s3Storage } from "./storage/resource"
 import { postConfirmation } from "./functions/postConfirmation/resource"
+import { addInventory } from "./functions/inventory/add-inventory/resource"
 import { app_name, auth_domain_prefix, envSuffix } from "./utils"
 import { initRestApi } from "./api/resource"
 import { Stack } from "aws-cdk-lib"
@@ -10,6 +11,7 @@ const backend = defineBackend({
   auth,
   storage: s3Storage,
   postConfirmation,
+  addInventory,
 })
 
 initAuth({
@@ -25,6 +27,7 @@ const dbTable = initDynamoDb(databaseStack)
 // Enforce bucket name to avoid auto generated names
 backend.storage.resources.cfnResources.cfnBucket.bucketName = `${app_name}-media-files-${envSuffix}`
 dbTable.grantWriteData(backend.postConfirmation.resources.lambda)
+dbTable.grantWriteData(backend.addInventory.resources.lambda)
 
 // Rest API
 const restApiStack = backend.createStack("restApi")
@@ -32,6 +35,7 @@ const restApiStack = backend.createStack("restApi")
 const restApi = initRestApi({
   scope: restApiStack,
   userPool: backend.auth.resources.userPool,
+  addInventoryLambda: backend.addInventory.resources.lambda,
 })
 
 backend.addOutput({
