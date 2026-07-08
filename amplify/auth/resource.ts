@@ -27,7 +27,7 @@ export const auth = defineAuth({
       verificationEmailSubject,
       verificationEmailBody(createCode: () => string) {
         const code = createCode()
-        return verificationEmailMessage.replace("####", code)
+        return verificationEmailMessage.replace("{####}", code)
       },
     },
   },
