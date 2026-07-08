@@ -26,17 +26,20 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         TableName: tableName,
         KeyConditionExpression: "PK = :pk",
         ExpressionAttributeValues: {
-          ":pk": `${Partitions.Users}#${sub}`,
+          ":pk": `${Partitions.User}#${sub}`,
         },
       })
     )
 
     const items = result.Items ?? []
 
-    const profile = items.find((i) => i.SK === "User")
-    const cart = items.find((i) => i.SK === "Cart")
+    const profile = items.find((i) => i.SK === Partitions.User)
+    const cart = items.find((i) => i.SK === Partitions.Cart)
 
-    return ok({ profile: profile?.details ?? null, cart: cart?.details ?? null })
+    return ok({
+      profile: profile?.details ?? null,
+      cart: cart?.details ?? null,
+    })
   } catch (error) {
     console.error("Error in handler:", error)
     return err("Internal Server Error")

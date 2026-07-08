@@ -10,6 +10,6 @@ export type UserDetails = {
 }
 
 export type UserItem = DbItem<
-  `${typeof Partitions.Users}#${string}`,
+  `${typeof Partitions.User}#${string}`,
   UserDetails
 >

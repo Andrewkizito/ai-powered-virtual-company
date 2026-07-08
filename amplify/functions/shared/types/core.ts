@@ -1,5 +1,5 @@
 export const Partitions = {
-  Users: "User",
+  User: "User",
   Cart: "Cart",
   Inventory: "Inventory",
 } as const

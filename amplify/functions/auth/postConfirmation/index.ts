@@ -27,7 +27,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     event.request.userAttributes
 
   const userItem: UserItem = {
-    PK: `${Partitions.Users}#${sub}`,
+    PK: `${Partitions.User}#${sub}`,
     SK: "User",
     details: {
       sub,
@@ -39,7 +39,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   }
 
   const cartItem: CartItem = {
-    PK: `${Partitions.Users}#${sub}`,
+    PK: `${Partitions.User}#${sub}`,
     SK: "Cart",
     details: {
       items: [],

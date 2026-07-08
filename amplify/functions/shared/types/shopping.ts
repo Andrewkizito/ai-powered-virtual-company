@@ -7,7 +7,7 @@ export type CartDetails = {
 }
 
 export type CartItem = DbItem<
-  `${typeof Partitions.Users}#${string}`,
+  `${typeof Partitions.User}#${string}`,
   CartDetails,
   "Cart"
 >
