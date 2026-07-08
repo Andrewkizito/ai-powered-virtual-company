@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "backend": "npx ampx sandbox --identifier $(whoami) --profile c-dev",
+    "backend:delete": "npx ampx sandbox delete --identifier $(whoami) --profile c-dev",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
