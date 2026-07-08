@@ -1,11 +1,14 @@
 import type { PostConfirmationTriggerHandler } from "aws-lambda"
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb"
+import {
+  DynamoDBDocumentClient,
+  TransactWriteCommand,
+} from "@aws-sdk/lib-dynamodb"
 import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider"
-import { Partitions, type UserItem } from "../shared/types"
+import { Partitions, type CartItem, type UserItem } from "../shared/types"
 import { AuthGroups } from "../../utils"
 
 const client = new DynamoDBClient({})
@@ -17,15 +20,14 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
 
   if (!tableName) {
     console.error("Missing STORAGE_DATABASE_NAME")
-    return event
   }
 
   const { sub, email, email_verified, name, phone_number } =
     event.request.userAttributes
 
-  const item: UserItem = {
+  const userItem: UserItem = {
     PK: `${Partitions.Users}#${sub}`,
-    SK: "Details",
+    SK: "User",
     details: {
       sub,
       email,
@@ -35,10 +37,37 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     },
   }
 
+  const cartItem: CartItem = {
+    PK: `${Partitions.Users}#${sub}`,
+    SK: "Cart",
+    details: {
+      items: [],
+    },
+  }
+
   try {
-    await db.send(new PutCommand({ TableName: tableName, Item: item }))
+    await db.send(
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Put: {
+              TableName: tableName,
+              Item: userItem,
+              ConditionExpression: "attribute_not_exists(PK)",
+            },
+          },
+          {
+            Put: {
+              TableName: tableName,
+              Item: cartItem,
+              ConditionExpression: "attribute_not_exists(PK)",
+            },
+          },
+        ],
+      })
+    )
   } catch (error) {
-    console.error("Failed to create user record:", error)
+    console.error("Failed to create user and cart records:", error)
   }
 
   try {
