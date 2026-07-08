@@ -1,15 +1,17 @@
 import * as apigateway from "aws-cdk-lib/aws-apigateway"
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb"
 import { Construct } from "constructs"
 import { app_domain, app_name } from "../utils"
 import { IUserPool } from "aws-cdk-lib/aws-cognito"
-import { IFunction } from "aws-cdk-lib/aws-lambda"
+import { initInventoryApiResource } from "./inventory"
+import type { InventoryApiLambdas } from "./inventory"
 
 export const initRestApi = (params: {
   scope: Construct
   userPool: IUserPool
-  addInventoryLambda: IFunction
-}) => {
-  const { scope, userPool, addInventoryLambda } = params
+  dbTable: dynamodb.Table
+} & InventoryApiLambdas) => {
+  const { scope, userPool, dbTable, ...domainLambdas } = params
   const restApi = new apigateway.RestApi(scope, "api", {
     restApiName: `${app_name}`,
     description: "Rest api for this ecommerce site",
@@ -30,16 +32,7 @@ export const initRestApi = (params: {
     }
   )
 
-  const rootResource = restApi.root.addResource("inventory")
-  rootResource.addMethod("GET", new apigateway.MockIntegration())
-  rootResource.addMethod(
-    "POST",
-    new apigateway.LambdaIntegration(addInventoryLambda),
-    {
-      authorizationType: apigateway.AuthorizationType.COGNITO,
-      authorizer: cognitoAuthorizer,
-    }
-  )
+  initInventoryApiResource({ restApi, dbTable, cognitoAuthorizer, ...domainLambdas })
 
   return restApi
 }
