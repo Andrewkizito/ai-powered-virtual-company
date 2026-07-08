@@ -20,6 +20,7 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
 
   if (!tableName) {
     console.error("Missing STORAGE_DATABASE_NAME")
+    return event
   }
 
   const { sub, email, email_verified, name, phone_number } =
