@@ -7,6 +7,7 @@ export const aws_branch = isSandbox ? "local" : process.env.AWS_BRANCH
 export const envSuffix = aws_branch
 
 export const dynamodb_table_name = `${app_name}-${envSuffix}`
+export const dynamodb_table_index_01 = "index-01"
 
 export const custom_group_resources_name = "Custom-Resources"
 
