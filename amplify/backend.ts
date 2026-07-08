@@ -1,7 +1,12 @@
 import { defineBackend } from "@aws-amplify/backend"
 import { auth, initAuth } from "./auth/resource"
 import { initDynamoDb, s3Storage } from "./storage/resource"
-import { addInventory, deleteInventory, getProfile, postConfirmation } from "./functions"
+import {
+  addInventory,
+  deleteInventory,
+  getProfile,
+  postConfirmation,
+} from "./functions"
 import { app_name, auth_domain_prefix, envSuffix } from "./utils"
 import { initRestApi } from "./api/resource"
 import { Stack } from "aws-cdk-lib"
@@ -45,7 +50,7 @@ backend.addOutput({
   custom: {
     cognito_auth_domain: `https://${auth_domain_prefix}.auth.${process.env.AWS_REGION}.amazoncognito.com`,
     API: {
-      [restApi.restApiName]: {
+      main: {
         endpoint: restApi.url,
         region: Stack.of(restApiStack).region,
         apiName: restApi.restApiName,
