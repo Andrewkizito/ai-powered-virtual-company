@@ -11,6 +11,7 @@ const backend = defineBackend({
 })
 
 initAuth({
+  scope: backend.auth.stack,
   userPool: backend.auth.resources.cfnResources.cfnUserPool,
   userPoolClient: backend.auth.resources.cfnResources.cfnUserPoolClient,
 })
