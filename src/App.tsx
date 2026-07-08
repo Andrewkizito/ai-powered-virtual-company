@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router"
-import AuthGuard from "./features/ui/auth-guard"
+import AuthGuard from "./features/ui/auth/auth-guard"
 
 export default function App() {
   return (

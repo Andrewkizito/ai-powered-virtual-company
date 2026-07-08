@@ -1,5 +1,5 @@
 import { useAuth } from "react-oidc-context"
-import Welcome from "../use-cases/auth-guard/welcome"
+import Welcome from "../../use-cases/auth/auth-guard/welcome"
 
 const AuthGuard = () => {
   const auth = useAuth()
