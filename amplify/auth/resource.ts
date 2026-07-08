@@ -4,6 +4,7 @@ import {
   CfnUserPoolClient,
   ManagedLoginVersion,
   UserPoolDomain,
+  CfnManagedLoginBranding,
 } from "aws-cdk-lib/aws-cognito"
 import { postConfirmation } from "../functions/postConfirmation/resource"
 import {
@@ -19,6 +20,8 @@ import {
   verificationEmailMessage,
   verificationEmailSubject,
 } from "./messaging"
+import { Construct } from "constructs"
+import { brandingAssets, brandingTheme } from "./theme"
 
 export const auth = defineAuth({
   name: `${app_name}-auth-${envSuffix}`,
@@ -49,6 +52,7 @@ export const auth = defineAuth({
 })
 
 export const initAuth = (params: {
+  scope: Construct
   userPool: CfnUserPool
   userPoolClient: CfnUserPoolClient
 }) => {
@@ -70,5 +74,12 @@ export const initAuth = (params: {
       domainPrefix: auth_domain_prefix,
     },
     managedLoginVersion: ManagedLoginVersion.NEWER_MANAGED_LOGIN,
+  })
+
+  new CfnManagedLoginBranding(params.userPool, "ui-branding", {
+    userPoolId: params.userPool.attrUserPoolId,
+    clientId: params.userPoolClient.attrClientId,
+    settings: brandingTheme,
+    assets: brandingAssets,
   })
 }
