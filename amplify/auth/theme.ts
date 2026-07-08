@@ -1,11 +1,8 @@
+import { CfnManagedLoginBranding } from "aws-cdk-lib/aws-cognito"
 import fs from "fs"
-import {
-  CfnManagedLoginBranding,
-  CfnManagedLoginBrandingProps,
-} from "aws-cdk-lib/aws-cognito"
 import path from "path"
 
-export const brandingTheme: CfnManagedLoginBrandingProps["settings"] = {
+export const brandingTheme = {
   categories: {
     global: {
       colorSchemeMode: "LIGHT",
