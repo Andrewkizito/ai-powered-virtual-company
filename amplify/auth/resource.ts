@@ -6,7 +6,7 @@ import {
   UserPoolDomain,
   CfnManagedLoginBranding,
 } from "aws-cdk-lib/aws-cognito"
-import { postConfirmation } from "../functions/postConfirmation/resource"
+import { postConfirmation } from "../functions/index"
 import {
   app_domain,
   app_name,

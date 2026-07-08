@@ -1,5 +1,5 @@
-import { defineFunction } from "@aws-amplify/backend";
-import { app_name, dynamodb_table_name, envSuffix } from "../../utils";
+import { defineFunction } from "@aws-amplify/backend"
+import { app_name, dynamodb_table_name, envSuffix } from "../../../utils"
 
 export const postConfirmation = defineFunction({
   name: `${app_name}-postConfirmation${envSuffix}`,
@@ -8,4 +8,4 @@ export const postConfirmation = defineFunction({
     STORAGE_DATABASE_NAME: dynamodb_table_name,
   },
   resourceGroupName: "auth",
-});
+})
