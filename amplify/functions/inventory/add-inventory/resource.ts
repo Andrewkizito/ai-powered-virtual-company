@@ -1,5 +1,5 @@
 import { defineFunction } from "@aws-amplify/backend"
-import { app_name, dynamodb_table_name, envSuffix } from "@/utils"
+import { app_name, dynamodb_table_name, envSuffix } from "../../../utils"
 
 export const addInventory = defineFunction({
   name: `${app_name}-addInventory-${envSuffix}`,
