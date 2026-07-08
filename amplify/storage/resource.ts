@@ -1,7 +1,12 @@
 import { defineStorage } from "@aws-amplify/backend"
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb"
 import { Construct } from "constructs"
-import { app_name, dynamodb_table_name, envSuffix } from "../utils"
+import {
+  app_name,
+  dynamodb_table_index_01,
+  dynamodb_table_name,
+  envSuffix,
+} from "../utils"
 import { RemovalPolicy } from "aws-cdk-lib"
 
 export const s3Storage = defineStorage({
@@ -37,6 +42,19 @@ export const initDynamoDb = (scope: Construct): dynamodb.Table => {
     },
     timeToLiveAttribute: "TTL",
     removalPolicy: RemovalPolicy.DESTROY,
+  })
+
+  table.addGlobalSecondaryIndex({
+    indexName: dynamodb_table_index_01,
+    partitionKey: {
+      name: "SK",
+      type: dynamodb.AttributeType.STRING,
+    },
+    sortKey: {
+      name: "PK",
+      type: dynamodb.AttributeType.STRING,
+    },
+    projectionType: dynamodb.ProjectionType.ALL,
   })
 
   return table
