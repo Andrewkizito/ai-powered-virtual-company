@@ -3,6 +3,8 @@ import { auth, initAuth } from "./auth/resource"
 import { initDynamoDb, s3Storage } from "./storage/resource"
 import { postConfirmation } from "./functions/postConfirmation/resource"
 import { app_name, auth_domain_prefix, envSuffix } from "./utils"
+import { initRestApi } from "./api/resource"
+import { Stack } from "aws-cdk-lib"
 
 const backend = defineBackend({
   auth,
@@ -24,8 +26,23 @@ const dbTable = initDynamoDb(databaseStack)
 backend.storage.resources.cfnResources.cfnBucket.bucketName = `${app_name}-media-files-${envSuffix}`
 dbTable.grantWriteData(backend.postConfirmation.resources.lambda)
 
+// Rest API
+const restApiStack = backend.createStack("restApi")
+
+const restApi = initRestApi({
+  scope: restApiStack,
+  userPool: backend.auth.resources.userPool,
+})
+
 backend.addOutput({
   custom: {
     cognito_auth_domain: `https://${auth_domain_prefix}.auth.${process.env.AWS_REGION}.amazoncognito.com`,
+    API: {
+      [restApi.restApiName]: {
+        endpoint: restApi.url,
+        region: Stack.of(restApiStack).region,
+        apiName: restApi.restApiName,
+      },
+    },
   },
 })
