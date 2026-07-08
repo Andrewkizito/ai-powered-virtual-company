@@ -23,12 +23,28 @@ import {
 export const auth = defineAuth({
   name: `${app_name}-auth-${envSuffix}`,
   loginWith: {
-    email: true,
+    email: {
+      verificationEmailSubject,
+      verificationEmailBody(createCode: () => string) {
+        const code = createCode()
+        return verificationEmailMessage.replace("####", code)
+      },
+    },
   },
   triggers: {
     postConfirmation: postConfirmation,
   },
   groups: [AuthGroups.Admin, AuthGroups.User],
+  userAttributes: {
+    fullname: {
+      mutable: true,
+      required: true,
+    },
+  },
+  multifactor: {
+    mode: "OPTIONAL",
+    totp: true,
+  },
   access: (allow) => [allow.resource(postConfirmation).to(["addUserToGroup"])],
 })
 
@@ -44,9 +60,6 @@ export const initAuth = (params: {
   }
 
   params.userPool.autoVerifiedAttributes = ["email"]
-
-  params.userPool.emailVerificationSubject = verificationEmailSubject
-  params.userPool.emailVerificationMessage = verificationEmailMessage
 
   params.userPoolClient.callbackUrLs = [app_domain]
   params.userPoolClient.logoutUrLs = [app_domain]
