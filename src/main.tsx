@@ -36,8 +36,6 @@ Amplify.configure({
   },
 })
 
-console.log(Amplify.getConfig())
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
