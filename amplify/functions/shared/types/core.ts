@@ -10,3 +10,8 @@ export type DbItem<P extends string, TDetails, SK extends string = string> = {
   details: TDetails
   TTL?: number
 }
+
+export enum InventoryItemStatus {
+  pending_inspection,
+  ready_for_shelf,
+}

@@ -1,4 +1,4 @@
-import type { DbItem } from "./core"
+import type { DbItem, InventoryItemStatus } from "./core"
 import { Partitions } from "./core"
 
 // Cart
@@ -21,6 +21,7 @@ export type InventoryItemDetails = {
   stock: number
   updatedAt: string
   createdAt: string
+  status: InventoryItemStatus
   rules: {
     restockThreshold: number
     pricingMode: "fixed" | "dynamic"
