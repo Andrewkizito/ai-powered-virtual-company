@@ -8,8 +8,8 @@ import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider"
-import { Partitions, type CartItem, type UserItem } from "../shared/types"
 import { AuthGroups } from "../../utils"
+import { type CartItem, type UserItem, Partitions } from "../shared/types"
 
 const client = new DynamoDBClient({})
 const db = DynamoDBDocumentClient.from(client)
