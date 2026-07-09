@@ -6,4 +6,6 @@ export type {
   CartItem,
   InventoryItemDetails,
   InventoryItem,
+  InventoryLedgerDetails,
+  InventoryLedgerItem,
 } from "./shopping"

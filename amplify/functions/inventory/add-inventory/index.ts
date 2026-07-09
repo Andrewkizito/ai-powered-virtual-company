@@ -1,5 +1,8 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb"
+import {
+  DynamoDBDocumentClient,
+  TransactWriteCommand,
+} from "@aws-sdk/lib-dynamodb"
 import { APIGatewayProxyHandler } from "aws-lambda"
 import { z } from "zod"
 import {
@@ -38,8 +41,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   const now = new Date().toISOString()
 
   const item: InventoryItem = {
-    PK: `${Partitions.Inventory}#${id}`,
-    SK: "Inventory",
+    PK: Partitions.Inventory,
+    SK: `InventoryItem#${id}`,
     details: {
       id,
       name,
@@ -55,10 +58,32 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
   try {
     await db.send(
-      new PutCommand({
-        TableName: tableName,
-        Item: item,
-        ConditionExpression: "attribute_not_exists(PK)",
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Put: {
+              TableName: tableName,
+              Item: item,
+              ConditionExpression: "attribute_not_exists(PK)",
+            },
+          },
+          {
+            Update: {
+              TableName: tableName,
+              Key: {
+                PK: Partitions.Inventory,
+                SK: "Details",
+              },
+              UpdateExpression:
+                "SET details.totalItems = if_not_exists(details.totalItems, :zero) + :inc, details.updatedAt = :now",
+              ExpressionAttributeValues: {
+                ":zero": 0,
+                ":inc": 1,
+                ":now": now,
+              },
+            },
+          },
+        ],
       })
     )
 

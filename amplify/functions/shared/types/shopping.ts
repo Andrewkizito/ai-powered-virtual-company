@@ -29,7 +29,18 @@ export type InventoryItemDetails = {
 }
 
 export type InventoryItem = DbItem<
-  `${typeof Partitions.Inventory}#${string}`,
+  typeof Partitions.Inventory,
   InventoryItemDetails,
-  "Inventory"
+  `InventoryItem#${string}`
+>
+
+export type InventoryLedgerDetails = {
+  totalItems: number
+  updatedAt: string
+}
+
+export type InventoryLedgerItem = DbItem<
+  typeof Partitions.Inventory,
+  InventoryLedgerDetails,
+  "Details"
 >
