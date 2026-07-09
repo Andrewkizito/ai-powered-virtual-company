@@ -4,6 +4,7 @@ import { initDynamoDb, s3Storage } from "./storage/resource"
 import {
   addInventory,
   deleteInventory,
+  getInventory,
   getProfile,
   postConfirmation,
 } from "./functions"
@@ -17,6 +18,7 @@ const backend = defineBackend({
   postConfirmation,
   addInventory,
   deleteInventory,
+  getInventory,
   getProfile,
 })
 
@@ -43,6 +45,7 @@ const restApi = initRestApi({
   dbTable,
   addInventoryLambda: backend.addInventory.resources.lambda,
   deleteInventoryLambda: backend.deleteInventory.resources.lambda,
+  getInventoryLambda: backend.getInventory.resources.lambda,
   getProfileLambda: backend.getProfile.resources.lambda,
 })
 

@@ -5,6 +5,7 @@ import { IFunction } from "aws-cdk-lib/aws-lambda"
 export type InventoryApiLambdas = {
   addInventoryLambda: IFunction
   deleteInventoryLambda: IFunction
+  getInventoryLambda: IFunction
 }
 
 export const initInventoryApiResource = (
@@ -20,13 +21,22 @@ export const initInventoryApiResource = (
     cognitoAuthorizer,
     addInventoryLambda,
     deleteInventoryLambda,
+    getInventoryLambda,
   } = params
 
   dbTable.grantWriteData(addInventoryLambda)
   dbTable.grantWriteData(deleteInventoryLambda)
+  dbTable.grantReadData(getInventoryLambda)
 
   const rootResource = restApi.root.addResource("inventory")
-  rootResource.addMethod("GET", new apigateway.MockIntegration())
+  rootResource.addMethod(
+    "GET",
+    new apigateway.LambdaIntegration(getInventoryLambda),
+    {
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: cognitoAuthorizer,
+    }
+  )
   rootResource.addMethod(
     "POST",
     new apigateway.LambdaIntegration(addInventoryLambda),
