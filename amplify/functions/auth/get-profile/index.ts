@@ -2,12 +2,15 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb"
 import { APIGatewayProxyHandler } from "aws-lambda"
 import { Partitions } from "../../shared/types"
-import { err, ok } from "../../shared/api"
+import { err, ok, requireAdmin } from "../../shared/api"
 
 const dbClient = new DynamoDBClient({})
 const db = DynamoDBDocumentClient.from(dbClient)
 
 export const handler: APIGatewayProxyHandler = async (event) => {
+  const forbidden = requireAdmin(event)
+  if (forbidden) return forbidden
+
   const tableName = process.env.STORAGE_DATABASE_NAME
 
   if (!tableName) {

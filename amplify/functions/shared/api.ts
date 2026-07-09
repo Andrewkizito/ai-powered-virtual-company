@@ -1,5 +1,5 @@
-import type { APIGatewayProxyResult } from "aws-lambda"
-import { app_name } from "../../utils"
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+import { app_name, AuthGroups } from "../../utils"
 
 const headers = {
   "Content-Type": "application/json",
@@ -24,4 +24,20 @@ export function err(
     headers,
     body: JSON.stringify({ message, ...extra }),
   }
+}
+
+export const requireAdmin = (event: APIGatewayProxyEvent) => {
+  const groups = event.requestContext.authorizer?.claims?.["cognito:groups"]
+
+  if (!groups) {
+    return err("Forbidden", 403)
+  }
+
+  const groupList = typeof groups === "string" ? groups.split(",") : groups
+
+  if (!groupList.includes(AuthGroups.Admin)) {
+    return err("Forbidden", 403)
+  }
+
+  return null
 }

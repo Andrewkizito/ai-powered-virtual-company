@@ -3,7 +3,7 @@ import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb"
 import { APIGatewayProxyHandler } from "aws-lambda"
 import { Partitions } from "../../shared/types"
 import type { InventoryLedgerDetails } from "../../shared/types"
-import { err, ok } from "../../shared/api"
+import { err, ok, requireAdmin } from "../../shared/api"
 import { decodeNextKey, encodeNextKey } from "../../shared/common"
 
 const dbClient = new DynamoDBClient({})
@@ -13,6 +13,9 @@ const DEFAULT_PAGE_SIZE = 20
 const MAX_PAGE_SIZE = 100
 
 export const handler: APIGatewayProxyHandler = async (event) => {
+  const forbidden = requireAdmin(event)
+  if (forbidden) return forbidden
+
   const tableName = process.env.STORAGE_DATABASE_NAME
 
   if (!tableName) {

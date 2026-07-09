@@ -11,13 +11,16 @@ import {
   InventoryItemStatus,
   Partitions,
 } from "../../shared/types"
-import { err, ok } from "../../shared/api"
+import { err, ok, requireAdmin } from "../../shared/api"
 import { AddInventorySchema, type AddInventoryBody } from "./schema"
 
 const dbClient = new DynamoDBClient({})
 const db = DynamoDBDocumentClient.from(dbClient)
 
 export const handler: APIGatewayProxyHandler = async (event) => {
+  const forbidden = requireAdmin(event)
+  if (forbidden) return forbidden
+
   const tableName = process.env.STORAGE_DATABASE_NAME
 
   if (!tableName) {
