@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { cognitoAuthConfig } from "@/lib/auth"
 import { GoSignOut } from "react-icons/go"
+import { IoNotificationsOutline } from "react-icons/io5"
 import { useAuth } from "react-oidc-context"
 import amplify_config from "../../../../amplify_outputs.json"
 
@@ -59,6 +60,12 @@ const Header = () => {
     <div className="fixed top-0 right-0 z-50 flex h-16 w-[calc(100vw-288px)] items-center justify-between border-b bg-background px-5">
       <div />
       <div className="flex items-center gap-8">
+        <Button variant="ghost" size="icon" className="relative">
+          <IoNotificationsOutline className="size-5" />
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-white">
+            3
+          </span>
+        </Button>
         <SignOut />
       </div>
     </div>
