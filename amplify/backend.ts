@@ -48,7 +48,7 @@ const restApi = initRestApi({
 
 backend.addOutput({
   custom: {
-    cognito_auth_domain: `https://${auth_domain_prefix}.auth.${process.env.AWS_REGION}.amazoncognito.com`,
+    cognito_auth_domain: `https://${auth_domain_prefix}.auth.${Stack.of(backend.stack).region}.amazoncognito.com`,
     API: {
       main: {
         endpoint: restApi.url,
