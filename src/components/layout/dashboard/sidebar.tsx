@@ -3,6 +3,9 @@ import {
   FiActivity,
   FiBox,
   FiBriefcase,
+  FiChevronRight,
+  FiClipboard,
+  FiCpu,
   FiCreditCard,
   FiDatabase,
   FiGrid,
@@ -10,11 +13,9 @@ import {
   FiSettings,
   FiShoppingCart,
   FiUsers,
-  FiChevronRight,
-  FiCpu,
-  FiClipboard,
 } from "react-icons/fi"
 import { IoChevronDown } from "react-icons/io5"
+import { NavLink } from "react-router"
 import { useAuth } from "react-oidc-context"
 
 const navigation = [
@@ -23,7 +24,7 @@ const navigation = [
     items: [
       {
         title: "Dashboard",
-        href: "/",
+        href: "/dashboard",
         icon: FiGrid,
       },
       {
@@ -109,41 +110,78 @@ const Sidebar = () => {
   const auth = useAuth()
 
   return (
-    <aside className="fixed top-0 left-0 flex h-screen w-72 flex-col border-r bg-background">
+    <aside className="fixed inset-y-0 left-0 flex w-72 flex-col border-r bg-background">
+      {/* Header */}
       <div className="flex h-16 items-center gap-3 border-b px-6">
-        <img src="/logo.svg" alt="Logo" className="size-8" />
+        <img src="/logo.svg" alt="Logo" className="size-8 shrink-0" />
 
-        <div>
-          <p className="text-sm font-semibold">Virtual Company</p>
-          <p className="text-xs text-muted-foreground">Autonomous Commerce</p>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold">Virtual Company</p>
+
+          <p className="truncate text-xs text-muted-foreground">
+            Autonomous Commerce
+          </p>
         </div>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="space-y-8">
+        <div className="space-y-7">
           {navigation.map((section) => (
             <div key={section.title}>
-              <h3 className="mb-3 px-3 text-xs font-semibold tracking-wider text-muted-foreground capitalize">
+              <p className="mb-2 px-3 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                 {section.title}
-              </h3>
+              </p>
 
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const Icon = item.icon
 
                   return (
-                    <a
+                    <NavLink
                       key={item.title}
-                      href={item.href}
-                      className="group flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                      to={item.href}
+                      className={({ isActive }) =>
+                        [
+                          "group relative flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
+                          isActive
+                            ? [
+                                "bg-primary/10 font-medium text-primary",
+                                "before:absolute before:left-0 before:h-6 before:w-1 before:rounded-r before:bg-primary",
+                              ].join(" ")
+                            : [
+                                "text-foreground/80",
+                                "hover:bg-accent hover:text-accent-foreground",
+                              ].join(" "),
+                        ].join(" ")
+                      }
                     >
-                      <div className="flex items-center gap-3">
-                        <Icon className="size-4 text-muted-foreground group-hover:text-foreground" />
-                        <span>{item.title}</span>
-                      </div>
+                      {({ isActive }) => (
+                        <>
+                          <div className="flex items-center gap-3">
+                            <Icon
+                              className={[
+                                "size-4 shrink-0 transition-colors",
+                                isActive
+                                  ? "text-primary"
+                                  : "text-foreground/60 group-hover:text-foreground",
+                              ].join(" ")}
+                            />
 
-                      <FiChevronRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </a>
+                            <span>{item.title}</span>
+                          </div>
+
+                          <FiChevronRight
+                            className={[
+                              "size-4 transition-all",
+                              isActive
+                                ? "text-primary opacity-100"
+                                : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100",
+                            ].join(" ")}
+                          />
+                        </>
+                      )}
+                    </NavLink>
                   )
                 })}
               </div>
@@ -152,17 +190,20 @@ const Sidebar = () => {
         </div>
       </nav>
 
-      <div className="border-t p-4">
-        <button className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent">
-          <Avatar className="size-10">
-            <AvatarImage src="/avatar.png" alt="User" />
+      {/* Profile */}
+      <div className="border-t p-3">
+        <button className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent">
+          <Avatar className="size-9">
+            <AvatarImage src="/avatar.png" />
+
             <AvatarFallback>KA</AvatarFallback>
           </Avatar>
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden text-left">
             <p className="truncate text-sm font-medium">
-              {auth.user?.profile.name}
+              {auth.user?.profile.name ?? "User"}
             </p>
+
             <p className="truncate text-xs text-muted-foreground">
               Administrator
             </p>
