@@ -14,11 +14,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.15.4",
+    "@aws-amplify/ui-react-storage": "^3.17.3",
     "@base-ui/react": "^1.6.0",
     "@fontsource-variable/inter": "^5.2.8",
     "@hugeicons/core-free-icons": "^4.2.2",
     "@hugeicons/react": "^1.1.9",
+    "@stepperize/react": "^7.0.0",
     "@tailwindcss/vite": "^4",
+    "@uiw/react-md-editor": "^4.1.1",
     "aws-amplify": "^6.18.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
