@@ -91,8 +91,9 @@ export const handler = async (event: S3Event) => {
           TableName: tableName,
           Key: ledgerKey,
           UpdateExpression:
-            "SET #updatedAt = :updatedAt ADD #totalFiles :files, #totalSize :size",
+            "SET #details.#updatedAt = :updatedAt ADD #details.#totalFiles :files, #details.#totalSize :size",
           ExpressionAttributeNames: {
+            "#details": "details",
             "#updatedAt": "updatedAt",
             "#totalFiles": "totalFiles",
             "#totalSize": "totalSize",
