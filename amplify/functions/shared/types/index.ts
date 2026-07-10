@@ -9,3 +9,9 @@ export type {
   InventoryLedgerDetails,
   InventoryLedgerItem,
 } from "./shopping"
+export type {
+  FileDetails,
+  FileItem,
+  FilesLedgerDetails,
+  FilesLedgerItem,
+} from "./files"
