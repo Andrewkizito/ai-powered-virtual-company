@@ -8,6 +8,7 @@ import {
   getProfile,
   postConfirmation,
   onUpload,
+  onDelete,
 } from "./functions"
 import { app_name, auth_domain_prefix, envSuffix } from "./utils"
 import { initRestApi } from "./api/resource"
@@ -22,6 +23,7 @@ const backend = defineBackend({
   getInventory,
   getProfile,
   onUpload,
+  onDelete,
 })
 
 initAuth({
@@ -38,6 +40,7 @@ const dbTable = initDynamoDb(databaseStack)
 backend.storage.resources.cfnResources.cfnBucket.bucketName = `${app_name}-media-files-${envSuffix}`
 dbTable.grantWriteData(backend.postConfirmation.resources.lambda)
 dbTable.grantReadWriteData(backend.onUpload.resources.lambda)
+dbTable.grantReadWriteData(backend.onDelete.resources.lambda)
 
 // Rest API
 const restApiStack = backend.createStack("restApi")
