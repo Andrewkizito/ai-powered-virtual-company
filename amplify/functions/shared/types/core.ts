@@ -2,6 +2,7 @@ export const Partitions = {
   User: "User",
   Cart: "Cart",
   Inventory: "Inventory",
+  Files: "Files",
 } as const
 
 export type DbItem<P extends string, TDetails, SK extends string = string> = {
