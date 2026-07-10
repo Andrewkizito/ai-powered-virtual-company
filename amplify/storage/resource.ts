@@ -8,7 +8,7 @@ import {
   envSuffix,
 } from "../utils"
 import { RemovalPolicy } from "aws-cdk-lib"
-import { onUpload } from "../functions/index"
+import { onUpload, onDelete } from "../functions/index"
 
 export const s3Storage = defineStorage({
   name: `${app_name}-media-files${envSuffix}`,
@@ -29,6 +29,7 @@ export const s3Storage = defineStorage({
   isDefault: true,
   triggers: {
     onUpload,
+    onDelete,
   },
 })
 
