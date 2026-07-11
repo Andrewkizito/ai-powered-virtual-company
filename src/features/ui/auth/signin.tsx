@@ -38,7 +38,7 @@ const SignIn = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            auth.signIn()
+            auth.signIn(email, password)
           }}
         >
           <div className="flex flex-col gap-4">

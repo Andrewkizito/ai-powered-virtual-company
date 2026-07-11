@@ -1,5 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
-import { fetchAuthSession, getCurrentUser, signOut } from "aws-amplify/auth"
+import {
+  fetchAuthSession,
+  getCurrentUser,
+  signIn,
+  signOut,
+} from "aws-amplify/auth"
 import { Hub } from "aws-amplify/utils"
 import {
   createContext,
@@ -9,6 +14,8 @@ import {
   useMemo,
   useState,
 } from "react"
+import { useNavigate } from "react-router"
+import { toast } from "sonner"
 
 interface AuthUser {
   username: string
@@ -19,7 +26,7 @@ interface IAuthContext {
   isAuthenticated: boolean
   isLoading: boolean
   user: AuthUser | null
-  signIn: () => void
+  signIn: (username: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -28,6 +35,7 @@ const AuthContext = createContext<IAuthContext | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function checkAuthState() {
@@ -64,7 +72,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => hubListener()
   }, [])
 
-  const handleSignIn = useCallback(() => {}, [])
+  const handleSignIn = useCallback(
+    async (username: string, password: string) => {
+      try {
+        setIsLoading(true)
+        const res = await signIn({ username, password })
+
+        if (res.nextStep?.signInStep === "CONFIRM_SIGN_UP") {
+          navigate("/confirm-account")
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Sign in failed")
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [navigate]
+  )
 
   const handleSignOut = useCallback(async () => {
     await signOut()
