@@ -1,19 +1,7 @@
 import { defineAuth } from "@aws-amplify/backend"
-import {
-  CfnUserPool,
-  CfnUserPoolClient,
-  ManagedLoginVersion,
-  UserPoolDomain,
-  CfnManagedLoginBranding,
-} from "aws-cdk-lib/aws-cognito"
+import { CfnUserPool, CfnUserPoolClient } from "aws-cdk-lib/aws-cognito"
 import { postConfirmation } from "../functions/index"
-import {
-  app_domain,
-  app_name,
-  auth_domain_prefix,
-  AuthGroups,
-  envSuffix,
-} from "../utils"
+import { app_name, AuthGroups, envSuffix } from "../utils"
 import {
   inviteEmailMessage,
   inviteEmailSubject,
@@ -21,7 +9,6 @@ import {
   verificationEmailSubject,
 } from "./messaging"
 import { Construct } from "constructs"
-import { brandingAssets, brandingTheme } from "./theme"
 
 export const auth = defineAuth({
   name: `${app_name}-auth-${envSuffix}`,
@@ -64,28 +51,4 @@ export const initAuth = (params: {
   }
 
   params.userPool.autoVerifiedAttributes = ["email"]
-
-  params.userPoolClient.callbackUrLs = [
-    app_domain,
-    "https://oauth.pstmn.io/v1/callback",
-  ]
-  params.userPoolClient.logoutUrLs = [
-    app_domain,
-    "https://oauth.pstmn.io/v1/callback",
-  ]
-
-  new UserPoolDomain(params.userPool, "userpool-domain", {
-    userPool: params.userPool,
-    cognitoDomain: {
-      domainPrefix: auth_domain_prefix,
-    },
-    managedLoginVersion: ManagedLoginVersion.NEWER_MANAGED_LOGIN,
-  })
-
-  new CfnManagedLoginBranding(params.userPool, "ui-branding", {
-    userPoolId: params.userPool.attrUserPoolId,
-    clientId: params.userPoolClient.attrClientId,
-    settings: brandingTheme,
-    assets: brandingAssets,
-  })
 }

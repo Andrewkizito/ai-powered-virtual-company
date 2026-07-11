@@ -11,7 +11,7 @@ import {
   onDelete,
   uploadFile,
 } from "./functions"
-import { app_name, auth_domain_prefix, envSuffix } from "./utils"
+import { app_name, envSuffix } from "./utils"
 import { initRestApi } from "./api/resource"
 import { Stack } from "aws-cdk-lib"
 
@@ -69,7 +69,6 @@ const restApi = initRestApi({
 
 backend.addOutput({
   custom: {
-    cognito_auth_domain: `https://${auth_domain_prefix}.auth.${Stack.of(backend.stack).region}.amazoncognito.com`,
     API: {
       main: {
         endpoint: restApi.url,

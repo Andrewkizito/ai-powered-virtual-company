@@ -11,11 +11,10 @@ import Dashboard from "./features/ui/admin/Dashboard"
 import AddInventory from "./features/ui/admin/inventory/AddInventory"
 import Inventory from "./features/ui/admin/inventory/Inventory"
 import SignIn from "./features/ui/auth/signin"
+import SignUp from "./features/ui/auth/signup"
 
 export default function App() {
   const auth = useAuth()
-
-  console.log(auth)
 
   return (
     <Routes>
@@ -32,6 +31,7 @@ export default function App() {
       ) : (
         <Route element={<AuthLayout />}>
           <Route path="/" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Route>
       )}

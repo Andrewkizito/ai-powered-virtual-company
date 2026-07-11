@@ -15,8 +15,6 @@ export const app_domain = isSandbox
   ? "http://localhost:5173"
   : `https://${aws_branch}.${process.env.AWS_APP_ID}.amplifyapp.com/`
 
-export const auth_domain_prefix = `${app_name}-${envSuffix}`
-
 export const AuthGroups = {
   Admin: "admin",
   User: "user",

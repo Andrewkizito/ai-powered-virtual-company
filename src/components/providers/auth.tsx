@@ -4,6 +4,7 @@ import {
   getCurrentUser,
   signIn,
   signOut,
+  signUp,
 } from "aws-amplify/auth"
 import { Hub } from "aws-amplify/utils"
 import {
@@ -27,6 +28,7 @@ interface IAuthContext {
   isLoading: boolean
   user: AuthUser | null
   signIn: (username: string, password: string) => Promise<void>
+  signUp: (fullname: string, email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -94,15 +96,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signOut()
   }, [])
 
+  const handleSignUp = useCallback(
+    async (fullname: string, email: string, password: string) => {
+      try {
+        setIsLoading(true)
+        await signUp({
+          username: email,
+          password,
+          options: {
+            userAttributes: {
+              email,
+              name: fullname,
+            },
+          },
+        })
+        navigate("/confirm-account")
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Sign up failed")
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [navigate]
+  )
+
   const value = useMemo(
     () => ({
       isAuthenticated: !!user,
       isLoading,
       user,
       signIn: handleSignIn,
+      signUp: handleSignUp,
       signOut: handleSignOut,
     }),
-    [user, isLoading, handleSignIn, handleSignOut]
+    [user, isLoading, handleSignIn, handleSignUp, handleSignOut]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

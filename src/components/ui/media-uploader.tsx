@@ -1,38 +1,27 @@
-import { useRef } from "react"
-import { uploadData } from "aws-amplify/storage"
-import { v4 as uuidv4 } from "uuid"
+import { FileUploader } from "@aws-amplify/ui-react-storage"
+import "@aws-amplify/ui-react/styles.css"
 import { toast } from "sonner"
+import { v4 as uuidv4 } from "uuid"
 
 const MediaUploader = () => {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const processFile = async ({ file }: { file: File }) => {
+    const fileExtension = file.name.split(".").pop()
 
-  const handleFile = async (file: File) => {
-    const extension = file.name.split(".").pop()
-    const filename = `${uuidv4()}.${extension}`
-    const path = `public/${filename}`
-
-    try {
-      await uploadData({ path, data: file, options: {} })
-      toast.success("File uploaded")
-    } catch (error) {
-      toast.error("Upload failed")
+    return {
+      file,
+      key: `${uuidv4()}.${fileExtension}`,
     }
   }
 
   return (
-    <div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) handleFile(file)
-        }}
-      />
-      <button onClick={() => inputRef.current?.click()}>Upload Image</button>
-    </div>
+    <FileUploader
+      acceptedFileTypes={["image/*"]}
+      path="public/"
+      maxFileCount={1}
+      isResumable
+      processFile={processFile}
+      onUploadError={(err) => toast.error(err)}
+    />
   )
 }
 
