@@ -65,8 +65,14 @@ export const initAuth = (params: {
 
   params.userPool.autoVerifiedAttributes = ["email"]
 
-  params.userPoolClient.callbackUrLs = [app_domain]
-  params.userPoolClient.logoutUrLs = [app_domain]
+  params.userPoolClient.callbackUrLs = [
+    app_domain,
+    "https://oauth.pstmn.io/v1/callback",
+  ]
+  params.userPoolClient.logoutUrLs = [
+    app_domain,
+    "https://oauth.pstmn.io/v1/callback",
+  ]
 
   new UserPoolDomain(params.userPool, "userpool-domain", {
     userPool: params.userPool,

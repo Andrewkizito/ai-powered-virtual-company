@@ -8,7 +8,7 @@ import {
   envSuffix,
 } from "../utils"
 import { RemovalPolicy } from "aws-cdk-lib"
-import { onUpload, onDelete } from "../functions/index"
+import { onUpload, onDelete, uploadFile } from "../functions/index"
 
 export const s3Storage = defineStorage({
   name: `${app_name}-media-files${envSuffix}`,
@@ -16,13 +16,16 @@ export const s3Storage = defineStorage({
     "public/*": [
       allow.guest.to(["read"]),
       allow.authenticated.to(["read", "write", "delete"]),
+      allow.resource(uploadFile).to(["write"]),
     ],
     "protected/{entity_id}/*": [
       allow.authenticated.to(["read"]),
       allow.entity("identity").to(["read", "write", "delete"]),
+      allow.resource(uploadFile).to(["write"]),
     ],
     "private/{entity_id}/*": [
       allow.entity("identity").to(["read", "write", "delete"]),
+      allow.resource(uploadFile).to(["write"]),
     ],
   }),
   keepOnDelete: false,
