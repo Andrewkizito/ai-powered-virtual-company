@@ -21,6 +21,8 @@ import {
 } from "react"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { setAuthenticated } from "@/store/auth/slice"
 
 interface AuthUser {
   username: string
@@ -55,6 +57,8 @@ interface IAuthContext {
 const AuthContext = createContext<IAuthContext | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const persistedAuth = useAppSelector((state) => state.auth.isAuthenticated)
+  const [isAuthenticated, setIsAuthenticated] = useState(persistedAuth)
   const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [pendingUsername, setPendingUsername] = useState<string | null>(null)
@@ -64,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     showPassword: false,
   })
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   const setCredentials = useCallback(
     (key: keyof Credentials, value: Credentials[keyof Credentials]) => {
@@ -82,8 +87,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           username: currentUser.username,
           userId: currentUser.userId,
         })
+        setIsAuthenticated(true)
+        dispatch(setAuthenticated(true))
       } catch {
         setUser(null)
+        setIsAuthenticated(false)
+        dispatch(setAuthenticated(false))
       } finally {
         setIsLoading(false)
       }
@@ -98,15 +107,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           break
         case "signedOut":
           setUser(null)
+          setIsAuthenticated(false)
+          dispatch(setAuthenticated(false))
           break
         case "tokenRefresh_failure":
           setUser(null)
+          setIsAuthenticated(false)
+          dispatch(setAuthenticated(false))
           break
       }
     })
 
     return () => hubListener()
-  }, [])
+  }, [dispatch])
 
   const handleSignIn = useCallback(async () => {
     try {
@@ -238,7 +251,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isAuthenticated: !!user,
+      isAuthenticated,
       isLoading,
       user,
       pendingUsername,
@@ -253,8 +266,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut: handleSignOut,
     }),
     [
-      user,
+      isAuthenticated,
       isLoading,
+      user,
       pendingUsername,
       credentials,
       setCredentials,
