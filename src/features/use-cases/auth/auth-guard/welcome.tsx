@@ -7,7 +7,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card"
-import { useAuth } from "react-oidc-context"
+import { useAuth } from "@/components/providers/auth"
 import { CgSpinner } from "react-icons/cg"
 
 const Welcome = () => {
@@ -38,7 +38,7 @@ const Welcome = () => {
           className="w-full"
           size="lg"
           disabled={auth.isLoading}
-          onClick={() => auth.signinRedirect()}
+          onClick={() => auth.signIn()}
         >
           {auth.isLoading ? (
             <>

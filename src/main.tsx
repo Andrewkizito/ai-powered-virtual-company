@@ -1,20 +1,21 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
-import "./index.css"
-import App from "./App.tsx"
-import { AuthProvider } from "react-oidc-context"
-import { Amplify } from "aws-amplify"
 import { ThemeProvider } from "@/components/providers/theme.tsx"
+import { Amplify } from "aws-amplify"
 import { BrowserRouter } from "react-router"
-import { cognitoAuthConfig, onSignIn } from "./lib/auth.ts"
+import { Toaster } from "sonner"
 import outputs from "../amplify_outputs.json"
+import App from "./App.tsx"
+import "./index.css"
+import { AuthProvider } from "@/components/providers/auth"
 
 Amplify.configure({
   Auth: {
     Cognito: {
       userPoolId: outputs.auth.user_pool_id,
       userPoolClientId: outputs.auth.user_pool_client_id,
+      identityPoolId: outputs.auth.identity_pool_id,
       loginWith: {
         email: true,
       },
@@ -39,9 +40,10 @@ Amplify.configure({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider {...cognitoAuthConfig} onSigninCallback={onSignIn}>
+      <AuthProvider>
         <ThemeProvider>
           <App />
+          <Toaster richColors />
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>

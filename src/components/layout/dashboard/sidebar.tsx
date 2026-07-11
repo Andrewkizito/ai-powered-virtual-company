@@ -16,7 +16,7 @@ import {
 } from "react-icons/fi"
 import { IoChevronDown } from "react-icons/io5"
 import { NavLink } from "react-router"
-import { useAuth } from "react-oidc-context"
+import { useAuth } from "@/components/providers/auth"
 
 const navigation = [
   {
@@ -201,7 +201,7 @@ const Sidebar = () => {
 
           <div className="flex-1 overflow-hidden text-left">
             <p className="truncate text-sm font-medium">
-              {auth.user?.profile.name ?? "User"}
+              {auth.user?.username ?? "User"}
             </p>
 
             <p className="truncate text-xs text-muted-foreground">

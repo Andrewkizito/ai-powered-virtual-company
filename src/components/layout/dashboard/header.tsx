@@ -9,24 +9,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { cognitoAuthConfig } from "@/lib/auth"
+import { useAuth } from "@/components/providers/auth"
 import { GoSignOut } from "react-icons/go"
 import { IoNotificationsOutline } from "react-icons/io5"
-import { useAuth } from "react-oidc-context"
-import amplify_config from "../../../../amplify_outputs.json"
 
 const SignOut = () => {
   const auth = useAuth()
-  const signOutRedirect = async () => {
-    const clientId = cognitoAuthConfig.client_id
-    const logoutUri = window.origin
-    const cognitoDomain = amplify_config.custom.cognito_auth_domain
-    const idToken = auth.user?.id_token
-
-    await auth.removeUser()
-
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}&id_token_hint=${encodeURIComponent(idToken || "")}`
-  }
 
   return (
     <AlertDialog>
@@ -46,7 +34,7 @@ const SignOut = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button variant={"destructive"} onClick={signOutRedirect}>
+          <Button variant={"destructive"} onClick={auth.signOut}>
             Continue
           </Button>
         </AlertDialogFooter>

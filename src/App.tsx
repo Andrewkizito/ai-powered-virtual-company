@@ -1,18 +1,21 @@
 // Hooks
-import { useAuth } from "react-oidc-context"
+import { useAuth } from "@/components/providers/auth"
 
 // UI Components
 import { Navigate, Route, Routes } from "react-router"
 import DashboardLayout from "./components/layout/dashboard/main"
+import AuthLayout from "./components/layout/auth/main"
 
 // Pages
-import AuthGuard from "./features/ui/auth/auth-guard"
 import Dashboard from "./features/ui/admin/Dashboard"
-import Inventory from "./features/ui/admin/inventory/Inventory"
 import AddInventory from "./features/ui/admin/inventory/AddInventory"
+import Inventory from "./features/ui/admin/inventory/Inventory"
+import SignIn from "./features/ui/auth/signin"
 
 export default function App() {
   const auth = useAuth()
+
+  console.log(auth)
 
   return (
     <Routes>
@@ -27,10 +30,10 @@ export default function App() {
           />
         </Route>
       ) : (
-        <>
-          <Route path="/" element={<AuthGuard />} />
+        <Route element={<AuthLayout />}>
+          <Route path="/" element={<SignIn />} />
           <Route path="*" element={<Navigate to="/" replace={true} />} />
-        </>
+        </Route>
       )}
     </Routes>
   )
