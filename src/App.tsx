@@ -13,6 +13,8 @@ import Inventory from "./features/ui/admin/inventory/Inventory"
 import SignIn from "./features/ui/auth/signin"
 import SignUp from "./features/ui/auth/signup"
 import ConfirmAccount from "./features/ui/auth/confirm-account"
+import ForgotPassword from "./features/ui/auth/forgot-password"
+import ResetPassword from "./features/ui/auth/reset-password"
 
 export default function App() {
   const auth = useAuth()
@@ -34,6 +36,8 @@ export default function App() {
           <Route path="/" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/confirm-account" element={<ConfirmAccount />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Route>
       )}

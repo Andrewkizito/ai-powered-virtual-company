@@ -1,7 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
   confirmSignUp,
+  confirmResetPassword,
   fetchAuthSession,
+  resetPassword,
   getCurrentUser,
   resendSignUpCode,
   signIn,
@@ -37,11 +39,16 @@ interface IAuthContext {
   user: AuthUser | null
   pendingUsername: string | null
   credentials: Credentials
-  setCredentials: (key: keyof Credentials, value: Credentials[keyof Credentials]) => void
+  setCredentials: (
+    key: keyof Credentials,
+    value: Credentials[keyof Credentials]
+  ) => void
   signIn: () => Promise<void>
   signUp: (fullname: string) => Promise<void>
   confirmSignUp: (code: string) => Promise<void>
   resendSignUpCode: () => Promise<void>
+  forgotPassword: () => Promise<void>
+  confirmResetPassword: (code: string, newPassword: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -191,6 +198,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [credentials.email, credentials.password, navigate]
   )
 
+  const handleForgotPassword = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      await resetPassword({ username: credentials.email })
+      setPendingUsername(credentials.email)
+      navigate("/reset-password")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send reset code"
+      )
+    } finally {
+      setIsLoading(false)
+    }
+  }, [credentials.email, navigate])
+
+  const handleConfirmResetPassword = useCallback(
+    async (code: string, newPassword: string) => {
+      if (!pendingUsername) return
+      try {
+        setIsLoading(true)
+        await confirmResetPassword({
+          username: pendingUsername,
+          confirmationCode: code,
+          newPassword,
+        })
+        toast.success("Password reset successful")
+        navigate("/")
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Password reset failed"
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [pendingUsername, navigate]
+  )
+
   const value = useMemo(
     () => ({
       isAuthenticated: !!user,
@@ -203,6 +248,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp: handleSignUp,
       confirmSignUp: handleConfirmSignUp,
       resendSignUpCode: handleResendSignUpCode,
+      forgotPassword: handleForgotPassword,
+      confirmResetPassword: handleConfirmResetPassword,
       signOut: handleSignOut,
     }),
     [
@@ -215,6 +262,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       handleSignUp,
       handleConfirmSignUp,
       handleResendSignUpCode,
+      handleForgotPassword,
+      handleConfirmResetPassword,
       handleSignOut,
     ]
   )
