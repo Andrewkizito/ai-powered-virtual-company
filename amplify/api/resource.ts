@@ -5,14 +5,14 @@ import { app_domain, app_name } from "../utils"
 import { IUserPool } from "aws-cdk-lib/aws-cognito"
 import { initAuthApiResource, type AuthApiLambdas } from "./auth"
 import { initInventoryApiResource, type InventoryApiLambdas } from "./inventory"
-import { initStorageApiResource, type StorageApiLambdas } from "./storage"
+
 
 export const initRestApi = (
   params: {
     scope: Construct
     userPool: IUserPool
     dbTable: dynamodb.Table
-  } & InventoryApiLambdas & AuthApiLambdas & StorageApiLambdas
+  } & InventoryApiLambdas & AuthApiLambdas
 ) => {
   const { scope, userPool, dbTable, ...domainLambdas } = params
   const restApi = new apigateway.RestApi(scope, "api", {
@@ -37,7 +37,6 @@ export const initRestApi = (
 
   initInventoryApiResource({ restApi, dbTable, cognitoAuthorizer, ...domainLambdas })
   initAuthApiResource({ restApi, dbTable, cognitoAuthorizer, ...domainLambdas })
-  initStorageApiResource({ restApi, dbTable, cognitoAuthorizer, ...domainLambdas })
 
   return restApi
 }

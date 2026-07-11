@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useAuth } from "@/components/providers/auth"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,9 +15,6 @@ import { Link } from "react-router"
 
 const SignIn = () => {
   const auth = useAuth()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <Card className="w-full max-w-105 shadow-lg max-sm:shadow-none!">
@@ -38,7 +34,7 @@ const SignIn = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            auth.signIn(email, password)
+            auth.signIn()
           }}
         >
           <div className="flex flex-col gap-4">
@@ -48,8 +44,8 @@ const SignIn = () => {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={auth.credentials.email}
+                onChange={(e) => auth.setCredentials("email", e.target.value)}
                 required
               />
             </Field>
@@ -58,10 +54,10 @@ const SignIn = () => {
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={auth.credentials.showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={auth.credentials.password}
+                onChange={(e) => auth.setCredentials("password", e.target.value)}
                 required
               />
             </Field>
@@ -74,8 +70,10 @@ const SignIn = () => {
             >
               <Checkbox
                 id="show-password"
-                checked={showPassword}
-                onCheckedChange={(checked) => setShowPassword(!!checked)}
+                checked={auth.credentials.showPassword}
+                onCheckedChange={(checked) =>
+                  auth.setCredentials("showPassword", !!checked)
+                }
               />
               Show password
             </label>

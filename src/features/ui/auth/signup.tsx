@@ -17,9 +17,6 @@ import { Link } from "react-router"
 const SignUp = () => {
   const auth = useAuth()
   const [fullname, setFullname] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <Card className="w-full max-w-105 shadow-lg max-sm:shadow-none!">
@@ -39,7 +36,7 @@ const SignUp = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            auth.signUp(fullname, email, password)
+            auth.signUp(fullname)
           }}
         >
           <div className="flex flex-col gap-4">
@@ -61,8 +58,8 @@ const SignUp = () => {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={auth.credentials.email}
+                onChange={(e) => auth.setCredentials("email", e.target.value)}
                 required
               />
             </Field>
@@ -71,10 +68,10 @@ const SignUp = () => {
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={auth.credentials.showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={auth.credentials.password}
+                onChange={(e) => auth.setCredentials("password", e.target.value)}
                 required
               />
             </Field>
@@ -87,8 +84,10 @@ const SignUp = () => {
             >
               <Checkbox
                 id="show-password"
-                checked={showPassword}
-                onCheckedChange={(checked) => setShowPassword(!!checked)}
+                checked={auth.credentials.showPassword}
+                onCheckedChange={(checked) =>
+                  auth.setCredentials("showPassword", !!checked)
+                }
               />
               Show password
             </label>

@@ -9,7 +9,6 @@ import {
   postConfirmation,
   onUpload,
   onDelete,
-  uploadFile,
 } from "./functions"
 import { app_name, envSuffix } from "./utils"
 import { initRestApi } from "./api/resource"
@@ -25,7 +24,6 @@ const backend = defineBackend({
   getProfile,
   onUpload,
   onDelete,
-  uploadFile,
 })
 
 initAuth({
@@ -44,15 +42,6 @@ dbTable.grantWriteData(backend.postConfirmation.resources.lambda)
 dbTable.grantReadWriteData(backend.onUpload.resources.lambda)
 dbTable.grantReadWriteData(backend.onDelete.resources.lambda)
 
-backend.uploadFile.addEnvironment(
-  "COGNITO_IDENTITY_POOL_ID",
-  backend.auth.resources.identityPoolId
-)
-backend.uploadFile.addEnvironment(
-  "COGNITO_USER_POOL_ID",
-  backend.auth.resources.userPool.userPoolId
-)
-
 // Rest API
 const restApiStack = backend.createStack("restApi")
 
@@ -64,7 +53,6 @@ const restApi = initRestApi({
   deleteInventoryLambda: backend.deleteInventory.resources.lambda,
   getInventoryLambda: backend.getInventory.resources.lambda,
   getProfileLambda: backend.getProfile.resources.lambda,
-  uploadFileLambda: backend.uploadFile.resources.lambda,
 })
 
 backend.addOutput({

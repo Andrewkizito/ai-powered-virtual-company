@@ -1,7 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
+  confirmSignUp,
   fetchAuthSession,
   getCurrentUser,
+  resendSignUpCode,
   signIn,
   signOut,
   signUp,
@@ -23,12 +25,23 @@ interface AuthUser {
   userId: string
 }
 
+type Credentials = {
+  email: string
+  password: string
+  showPassword: boolean
+}
+
 interface IAuthContext {
   isAuthenticated: boolean
   isLoading: boolean
   user: AuthUser | null
-  signIn: (username: string, password: string) => Promise<void>
-  signUp: (fullname: string, email: string, password: string) => Promise<void>
+  pendingUsername: string | null
+  credentials: Credentials
+  setCredentials: (key: keyof Credentials, value: Credentials[keyof Credentials]) => void
+  signIn: () => Promise<void>
+  signUp: (fullname: string) => Promise<void>
+  confirmSignUp: (code: string) => Promise<void>
+  resendSignUpCode: () => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -37,12 +50,26 @@ const AuthContext = createContext<IAuthContext | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [pendingUsername, setPendingUsername] = useState<string | null>(null)
+  const [credentials, setCredentialsState] = useState<Credentials>({
+    email: "",
+    password: "",
+    showPassword: false,
+  })
   const navigate = useNavigate()
+
+  const setCredentials = useCallback(
+    (key: keyof Credentials, value: Credentials[keyof Credentials]) => {
+      setCredentialsState((prev) => ({ ...prev, [key]: value }))
+    },
+    []
+  )
 
   useEffect(() => {
     async function checkAuthState() {
       try {
         const currentUser = await getCurrentUser()
+        console.log(JSON.stringify(currentUser, null, 2))
         await fetchAuthSession()
         setUser({
           username: currentUser.username,
@@ -74,42 +101,86 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => hubListener()
   }, [])
 
-  const handleSignIn = useCallback(
-    async (username: string, password: string) => {
-      try {
-        setIsLoading(true)
-        const res = await signIn({ username, password })
+  const handleSignIn = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const res = await signIn({
+        username: credentials.email,
+        password: credentials.password,
+      })
 
-        if (res.nextStep?.signInStep === "CONFIRM_SIGN_UP") {
-          navigate("/confirm-account")
-        }
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Sign in failed")
-      } finally {
-        setIsLoading(false)
+      if (res.nextStep?.signInStep === "CONFIRM_SIGN_UP") {
+        setPendingUsername(credentials.email)
+        navigate("/confirm-account")
       }
-    },
-    [navigate]
-  )
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Sign in failed")
+    } finally {
+      setIsLoading(false)
+    }
+  }, [credentials.email, credentials.password, navigate])
 
   const handleSignOut = useCallback(async () => {
     await signOut()
   }, [])
 
+  const handleConfirmSignUp = useCallback(
+    async (code: string) => {
+      if (!pendingUsername) return
+      try {
+        setIsLoading(true)
+        await confirmSignUp({
+          username: pendingUsername,
+          confirmationCode: code,
+        })
+
+        if (credentials.password) {
+          await signIn({
+            username: pendingUsername,
+            password: credentials.password,
+          })
+          setCredentialsState({ email: "", password: "", showPassword: false })
+        } else {
+          navigate("/")
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Confirmation failed"
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [pendingUsername, credentials.password, navigate]
+  )
+
+  const handleResendSignUpCode = useCallback(async () => {
+    if (!pendingUsername) return
+    try {
+      await resendSignUpCode({ username: pendingUsername })
+      toast.success("Verification code sent")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to resend code"
+      )
+    }
+  }, [pendingUsername])
+
   const handleSignUp = useCallback(
-    async (fullname: string, email: string, password: string) => {
+    async (fullname: string) => {
       try {
         setIsLoading(true)
         await signUp({
-          username: email,
-          password,
+          username: credentials.email,
+          password: credentials.password,
           options: {
             userAttributes: {
-              email,
+              email: credentials.email,
               name: fullname,
             },
           },
         })
+        setPendingUsername(credentials.email)
         navigate("/confirm-account")
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "Sign up failed")
@@ -117,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false)
       }
     },
-    [navigate]
+    [credentials.email, credentials.password, navigate]
   )
 
   const value = useMemo(
@@ -125,11 +196,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: !!user,
       isLoading,
       user,
+      pendingUsername,
+      credentials,
+      setCredentials,
       signIn: handleSignIn,
       signUp: handleSignUp,
+      confirmSignUp: handleConfirmSignUp,
+      resendSignUpCode: handleResendSignUpCode,
       signOut: handleSignOut,
     }),
-    [user, isLoading, handleSignIn, handleSignUp, handleSignOut]
+    [
+      user,
+      isLoading,
+      pendingUsername,
+      credentials,
+      setCredentials,
+      handleSignIn,
+      handleSignUp,
+      handleConfirmSignUp,
+      handleResendSignUpCode,
+      handleSignOut,
+    ]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

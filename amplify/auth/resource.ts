@@ -1,5 +1,6 @@
 import { defineAuth } from "@aws-amplify/backend"
 import { CfnUserPool, CfnUserPoolClient } from "aws-cdk-lib/aws-cognito"
+import { Construct } from "constructs"
 import { postConfirmation } from "../functions/index"
 import { app_name, AuthGroups, envSuffix } from "../utils"
 import {
@@ -8,7 +9,6 @@ import {
   verificationEmailMessage,
   verificationEmailSubject,
 } from "./messaging"
-import { Construct } from "constructs"
 
 export const auth = defineAuth({
   name: `${app_name}-auth-${envSuffix}`,
