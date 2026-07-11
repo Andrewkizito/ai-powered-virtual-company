@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
-import { persistStore, persistReducer, type Storage } from "redux-persist"
+import { persistReducer, type Storage } from "redux-persist"
 import authReducer from "./auth/slice"
 
 const localStorage: Storage = {
